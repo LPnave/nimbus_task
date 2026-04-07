@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Loader2, Eye, EyeOff, Database } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,6 +17,30 @@ const schema = z.object({
 })
 
 type FormData = z.infer<typeof schema>
+
+const panelVariants = {
+  hidden: (dir: number) => ({ opacity: 0, x: dir * 48 }),
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: 'easeOut' as const },
+  },
+}
+
+const stagger = {
+  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } },
+}
+
+const fieldVariant = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' as const } },
+}
+
+const errorVariant = {
+  hidden: { opacity: 0, y: -4, height: 0 },
+  visible: { opacity: 1, y: 0, height: 'auto', transition: { duration: 0.2 } },
+  exit: { opacity: 0, y: -4, height: 0, transition: { duration: 0.15 } },
+}
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -32,9 +57,15 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8ff] flex">
+    <div className="min-h-screen bg-[#faf8ff] flex overflow-hidden">
       {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-center w-1/2 p-16 bg-[#f2f3ff] border-r border-[#c6c6cd] relative overflow-hidden">
+      <motion.div
+        className="hidden lg:flex flex-col justify-center w-1/2 p-16 bg-[#f2f3ff] border-r border-[#c6c6cd] relative overflow-hidden"
+        custom={-1}
+        variants={panelVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -50,26 +81,50 @@ export default function Login() {
           }}
         />
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-8">
+          <motion.div
+            className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-8"
+            initial={{ scale: 0, rotate: -12 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.3, duration: 0.5, type: 'spring', stiffness: 260, damping: 18 }}
+          >
             <Database className="h-8 w-8 text-blue-600" />
-          </div>
-          <h1
+          </motion.div>
+          <motion.h1
             className="text-4xl font-bold text-[#131b2e] tracking-tight mb-3"
             style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5, ease: 'easeOut' as const }}
           >
             GeoSaaS
-          </h1>
-          <p className="text-[#45464d] text-sm leading-relaxed max-w-xs">
+          </motion.h1>
+          <motion.p
+            className="text-[#45464d] text-sm leading-relaxed max-w-xs"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5, ease: 'easeOut' as const }}
+          >
             Enterprise-grade data architecture.
-          </p>
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-white">
-        <div className="w-full max-w-sm">
+      <motion.div
+        className="flex-1 flex items-center justify-center p-6 bg-white"
+        custom={1}
+        variants={panelVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div
+          className="w-full max-w-sm"
+          variants={stagger}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2.5 mb-10">
+          <motion.div variants={fieldVariant} className="lg:hidden flex items-center gap-2.5 mb-10">
             <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
               <Database className="h-4 w-4 text-blue-600" />
             </div>
@@ -79,9 +134,9 @@ export default function Login() {
             >
               GeoSaaS
             </span>
-          </div>
+          </motion.div>
 
-          <div className="mb-8">
+          <motion.div variants={fieldVariant} className="mb-8">
             <h2
               className="text-2xl font-bold text-[#131b2e] mb-2"
               style={{ fontFamily: '"Space Grotesk", sans-serif' }}
@@ -91,10 +146,11 @@ export default function Login() {
             <p className="text-sm text-[#45464d]">
               Enter your credentials to access your dashboard
             </p>
-          </div>
+          </motion.div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="space-y-2">
+            {/* Email */}
+            <motion.div variants={fieldVariant} className="space-y-2">
               <Label htmlFor="email" className="text-[#131b2e]">Email Address</Label>
               <Input
                 id="email"
@@ -103,12 +159,23 @@ export default function Login() {
                 autoComplete="email"
                 {...register('email')}
               />
-              {errors.email && (
-                <p className="text-xs text-red-600">{errors.email.message}</p>
-              )}
-            </div>
+              <AnimatePresence>
+                {errors.email && (
+                  <motion.p
+                    className="text-xs text-red-600 overflow-hidden"
+                    variants={errorVariant}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    {errors.email.message}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-            <div className="space-y-2">
+            {/* Password */}
+            <motion.div variants={fieldVariant} className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password" className="text-[#131b2e]">Password</Label>
                 <button
@@ -127,21 +194,43 @@ export default function Login() {
                   className="pr-10"
                   {...register('password')}
                 />
-                <button
+                <motion.button
                   type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#76777d] hover:text-[#131b2e] transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  whileTap={{ scale: 0.85 }}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={showPassword ? 'off' : 'on'}
+                      initial={{ opacity: 0, rotate: -15, scale: 0.7 }}
+                      animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                      exit={{ opacity: 0, rotate: 15, scale: 0.7 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </motion.span>
+                  </AnimatePresence>
+                </motion.button>
               </div>
-              {errors.password && (
-                <p className="text-xs text-red-600">{errors.password.message}</p>
-              )}
-            </div>
+              <AnimatePresence>
+                {errors.password && (
+                  <motion.p
+                    className="text-xs text-red-600 overflow-hidden"
+                    variants={errorVariant}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    {errors.password.message}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-            <div className="flex items-center gap-2">
+            {/* Remember me */}
+            <motion.div variants={fieldVariant} className="flex items-center gap-2">
               <input
                 id="rememberMe"
                 type="checkbox"
@@ -154,52 +243,59 @@ export default function Login() {
               >
                 Keep me signed in for 30 days
               </Label>
-            </div>
+            </motion.div>
 
-            <Button type="submit" className="w-full" disabled={login.isPending}>
-              {login.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </Button>
+            {/* Submit */}
+            <motion.div variants={fieldVariant} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}>
+              <Button type="submit" className="w-full" disabled={login.isPending}>
+                {login.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Signing in…
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
+            </motion.div>
           </form>
 
-          <div className="relative my-6">
+          {/* Divider */}
+          <motion.div variants={fieldVariant} className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#c6c6cd]" />
             </div>
             <div className="relative flex justify-center text-xs">
               <span className="bg-white px-3 text-[#45464d]">Or continue with</span>
             </div>
-          </div>
+          </motion.div>
 
-          <Button variant="outline" className="w-full" disabled>
-            <svg className="h-4 w-4" viewBox="0 0 24 24">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </svg>
-            Google SSO
-          </Button>
+          {/* Google SSO */}
+          <motion.div variants={fieldVariant} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }}>
+            <Button variant="outline" className="w-full" disabled>
+              <svg className="h-4 w-4" viewBox="0 0 24 24">
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335"
+                />
+              </svg>
+              Google SSO
+            </Button>
+          </motion.div>
 
-          <p className="text-center text-sm text-[#45464d] mt-6">
+          <motion.p variants={fieldVariant} className="text-center text-sm text-[#45464d] mt-6">
             Don't have an account?{' '}
             <Link
               to="/register"
@@ -207,9 +303,9 @@ export default function Login() {
             >
               Request early access
             </Link>
-          </p>
-        </div>
-      </div>
+          </motion.p>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

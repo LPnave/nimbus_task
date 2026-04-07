@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Loader2, Eye, EyeOff, Database, Cloud, Lock, CheckCircle } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,6 +22,36 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+const panelVariants = {
+  hidden: (dir: number) => ({ opacity: 0, x: dir * 48 }),
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: 'easeOut' as const },
+  },
+}
+
+const stagger = {
+  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } },
+}
+
+const fieldVariant = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' as const } },
+}
+
+const errorVariant = {
+  hidden: { opacity: 0, y: -4, height: 0 },
+  visible: { opacity: 1, y: 0, height: 'auto', transition: { duration: 0.2 } },
+  exit: { opacity: 0, y: -4, height: 0, transition: { duration: 0.15 } },
+}
+
+const trustBadges = [
+  { icon: CheckCircle, label: 'Enterprise Ready' },
+  { icon: Cloud, label: 'Cloud Native' },
+  { icon: Lock, label: 'AES-256' },
+]
+
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const register = useRegister()
@@ -36,9 +67,15 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8ff] flex">
+    <div className="min-h-screen bg-[#faf8ff] flex overflow-hidden">
       {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-center w-1/2 p-16 bg-[#f2f3ff] border-r border-[#c6c6cd] relative overflow-hidden">
+      <motion.div
+        className="hidden lg:flex flex-col justify-center w-1/2 p-16 bg-[#f2f3ff] border-r border-[#c6c6cd] relative overflow-hidden"
+        custom={-1}
+        variants={panelVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -54,26 +91,50 @@ export default function Register() {
           }}
         />
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-8">
+          <motion.div
+            className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-8"
+            initial={{ scale: 0, rotate: -12 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.3, duration: 0.5, type: 'spring', stiffness: 260, damping: 18 }}
+          >
             <Database className="h-8 w-8 text-blue-600" />
-          </div>
-          <h1
+          </motion.div>
+          <motion.h1
             className="text-4xl font-bold text-[#131b2e] tracking-tight mb-3"
             style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5, ease: 'easeOut' as const }}
           >
             GeoSaaS
-          </h1>
-          <p className="text-[#45464d] text-sm leading-relaxed max-w-xs">
+          </motion.h1>
+          <motion.p
+            className="text-[#45464d] text-sm leading-relaxed max-w-xs"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5, ease: 'easeOut' as const }}
+          >
             Enterprise-grade data architecture.
-          </p>
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-white">
-        <div className="w-full max-w-sm">
+      <motion.div
+        className="flex-1 flex items-center justify-center p-6 bg-white"
+        custom={1}
+        variants={panelVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div
+          className="w-full max-w-sm"
+          variants={stagger}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2.5 mb-10">
+          <motion.div variants={fieldVariant} className="lg:hidden flex items-center gap-2.5 mb-10">
             <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
               <Database className="h-4 w-4 text-blue-600" />
             </div>
@@ -83,9 +144,9 @@ export default function Register() {
             >
               GeoSaaS
             </span>
-          </div>
+          </motion.div>
 
-          <div className="mb-8">
+          <motion.div variants={fieldVariant} className="mb-8">
             <h2
               className="text-2xl font-bold text-[#131b2e] mb-2"
               style={{ fontFamily: '"Space Grotesk", sans-serif' }}
@@ -95,10 +156,11 @@ export default function Register() {
             <p className="text-sm text-[#45464d]">
               Enter your professional details to establish your data environment.
             </p>
-          </div>
+          </motion.div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="space-y-2">
+            {/* Full Name */}
+            <motion.div variants={fieldVariant} className="space-y-2">
               <Label htmlFor="name" className="text-[#131b2e]">Full Name</Label>
               <Input
                 id="name"
@@ -107,12 +169,23 @@ export default function Register() {
                 autoComplete="name"
                 {...formRegister('name')}
               />
-              {errors.name && (
-                <p className="text-xs text-red-600">{errors.name.message}</p>
-              )}
-            </div>
+              <AnimatePresence>
+                {errors.name && (
+                  <motion.p
+                    className="text-xs text-red-600 overflow-hidden"
+                    variants={errorVariant}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    {errors.name.message}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-            <div className="space-y-2">
+            {/* Email */}
+            <motion.div variants={fieldVariant} className="space-y-2">
               <Label htmlFor="email" className="text-[#131b2e]">Email Address</Label>
               <Input
                 id="email"
@@ -121,12 +194,23 @@ export default function Register() {
                 autoComplete="email"
                 {...formRegister('email')}
               />
-              {errors.email && (
-                <p className="text-xs text-red-600">{errors.email.message}</p>
-              )}
-            </div>
+              <AnimatePresence>
+                {errors.email && (
+                  <motion.p
+                    className="text-xs text-red-600 overflow-hidden"
+                    variants={errorVariant}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    {errors.email.message}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-            <div className="space-y-2">
+            {/* Password */}
+            <motion.div variants={fieldVariant} className="space-y-2">
               <Label htmlFor="password" className="text-[#131b2e]">Password</Label>
               <div className="relative">
                 <Input
@@ -137,56 +221,84 @@ export default function Register() {
                   className="pr-10"
                   {...formRegister('password')}
                 />
-                <button
+                <motion.button
                   type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#76777d] hover:text-[#131b2e] transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  whileTap={{ scale: 0.85 }}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={showPassword ? 'off' : 'on'}
+                      initial={{ opacity: 0, rotate: -15, scale: 0.7 }}
+                      animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                      exit={{ opacity: 0, rotate: 15, scale: 0.7 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </motion.span>
+                  </AnimatePresence>
+                </motion.button>
               </div>
-              {errors.password && (
-                <p className="text-xs text-red-600">{errors.password.message}</p>
-              )}
+              <AnimatePresence>
+                {errors.password && (
+                  <motion.p
+                    className="text-xs text-red-600 overflow-hidden"
+                    variants={errorVariant}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    {errors.password.message}
+                  </motion.p>
+                )}
+              </AnimatePresence>
               <p className="text-xs text-[#76777d]">Min 8 chars, one uppercase, one number</p>
-            </div>
+            </motion.div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={register.isPending}
+            {/* Submit */}
+            <motion.div
+              variants={fieldVariant}
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
             >
-              {register.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Creating account…
-                </>
-              ) : (
-                'Create Account'
-              )}
-            </Button>
+              <Button type="submit" className="w-full" disabled={register.isPending}>
+                {register.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Creating account…
+                  </>
+                ) : (
+                  'Create Account'
+                )}
+              </Button>
+            </motion.div>
           </form>
 
           {/* Trust badges */}
-          <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
-            <div className="flex items-center gap-1.5 text-[11px] text-[#45464d]">
-              <CheckCircle className="h-3 w-3 text-blue-600" />
-              <span>Enterprise Ready</span>
-            </div>
-            <div className="w-px h-3 bg-[#c6c6cd]" />
-            <div className="flex items-center gap-1.5 text-[11px] text-[#45464d]">
-              <Cloud className="h-3 w-3 text-blue-600" />
-              <span>Cloud Native</span>
-            </div>
-            <div className="w-px h-3 bg-[#c6c6cd]" />
-            <div className="flex items-center gap-1.5 text-[11px] text-[#45464d]">
-              <Lock className="h-3 w-3 text-blue-600" />
-              <span>AES-256</span>
-            </div>
-          </div>
+          <motion.div
+            variants={fieldVariant}
+            className="flex items-center justify-center gap-3 mt-5 flex-wrap"
+          >
+            {trustBadges.map(({ icon: Icon, label }, i) => (
+              <motion.div
+                key={label}
+                className="flex items-center gap-1.5 text-[11px] text-[#45464d]"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6 + i * 0.08, duration: 0.3, type: 'spring' }}
+              >
+                <Icon className="h-3 w-3 text-blue-600" />
+                <span>{label}</span>
+                {i < trustBadges.length - 1 && (
+                  <div className="w-px h-3 bg-[#c6c6cd] ml-3" />
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
 
-          <p className="text-center text-sm text-[#45464d] mt-5">
+          <motion.p variants={fieldVariant} className="text-center text-sm text-[#45464d] mt-5">
             Already have an account?{' '}
             <Link
               to="/login"
@@ -194,9 +306,9 @@ export default function Register() {
             >
               Sign in
             </Link>
-          </p>
-        </div>
-      </div>
+          </motion.p>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }
