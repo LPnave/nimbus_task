@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #faf8ff;
+  --color-surface: #ffffff;
+  --color-surface-2: #f2f3ff;
+  --color-surface-3: #eaedff;
+  --color-surface-4: #e2e7ff;
+  --color-border: #c6c6cd;
+  --color-border-subtle: #dae2fd;
+  --color-foreground: #131b2e;
+  --color-muted: #45464d;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-subtle: rgba(37, 99, 235, 0.10);
+  --color-destructive: #ba1a1a;
+  --color-destructive-subtle: rgba(186, 26, 26, 0.10);
+  --color-success: #16a34a;
+
+  --font-family-sans: "Inter", system-ui, sans-serif;
+  --font-family-heading: "Space Grotesk", "Inter", system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+/* shadcn/ui CSS variable bridge — light theme */
+:root {
+  --background: 240 100% 99%;
+  --foreground: 220 40% 13%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 40% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 40% 13%;
+  --primary: 220 40% 13%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 238 100% 97%;
+  --secondary-foreground: 220 40% 13%;
+  --muted: 238 100% 97%;
+  --muted-foreground: 234 5% 29%;
+  --accent: 232 100% 96%;
+  --accent-foreground: 220 40% 13%;
+  --destructive: 4 73% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 5% 79%;
+  --input: 240 5% 79%;
+  --ring: 217 81% 56%;
+  --radius: 0.5rem;
+}
+
+* {
+  box-sizing: border-box;
+  border-color: hsl(var(--border));
+}
+
+html {
+  color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: #faf8ff;
+  color: #131b2e;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* MapLibre overrides */
+.maplibregl-map {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c6c6cd;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #76777d;
+}
+
