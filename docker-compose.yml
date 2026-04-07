@@ -35,7 +35,7 @@ services:
       redis:
         condition: service_healthy
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Default: >-
         Host=db;Port=5432;Database=${POSTGRES_DB:-geosaas};
         Username=${POSTGRES_USER:-geosaas};Password=${POSTGRES_PASSWORD:-changeme}
@@ -51,6 +51,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 60s
 
   nginx:
     image: nginx:alpine

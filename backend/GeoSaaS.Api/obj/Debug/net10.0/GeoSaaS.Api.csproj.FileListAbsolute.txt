@@ -140,3 +140,7 @@ C:\Users\LahiruN\Lahiru\Nimbus\backend\GeoSaaS.Api\obj\Debug\net10.0\refint\GeoS
 C:\Users\LahiruN\Lahiru\Nimbus\backend\GeoSaaS.Api\obj\Debug\net10.0\GeoSaaS.Api.pdb
 C:\Users\LahiruN\Lahiru\Nimbus\backend\GeoSaaS.Api\obj\Debug\net10.0\GeoSaaS.Api.genruntimeconfig.cache
 C:\Users\LahiruN\Lahiru\Nimbus\backend\GeoSaaS.Api\obj\Debug\net10.0\ref\GeoSaaS.Api.dll
+C:\Users\LahiruN\Lahiru\Nimbus\backend\GeoSaaS.Api\bin\Debug\net10.0\Microsoft.Extensions.Caching.StackExchangeRedis.dll
+C:\Users\LahiruN\Lahiru\Nimbus\backend\GeoSaaS.Api\bin\Debug\net10.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\LahiruN\Lahiru\Nimbus\backend\GeoSaaS.Api\bin\Debug\net10.0\StackExchange.Redis.dll
+C:\Users\LahiruN\Lahiru\Nimbus\backend\GeoSaaS.Api\obj\Debug\net10.0\GeoSaaS.Api.sourcelink.json
